@@ -4,7 +4,7 @@ function jaavaa() {
 }
 
 
-function initMap() {
+function searchTransport() {
     var directionsRenderer = new google.maps.DirectionsRenderer;
     var directionsService = new google.maps.DirectionsService;
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -21,23 +21,60 @@ function initMap() {
 
   function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     var selectedMode = document.getElementById('mode').value;
-    directionsService.route({
-      origin: {lat: 37.77, lng: -122.447},  // Haight.
-      destination: {lat: 37.768, lng: -122.511},  // Ocean Beach.
-      // Note that Javascript allows us to access the constant
-      // using square brackets and a string value as its
-      // "property."
-      travelMode: google.maps.TravelMode[selectedMode]
-    }, function(response, status) {
-      if (status == 'OK') {
-        directionsRenderer.setDirections(response);
-      } else {
-        window.alert('Directions request failed due to ' + status);
-      }
-    });
+
+    var terst = Geocoder.geocode();
+    console.log(terst);
+
+    var markerOrigin = geocodeAddress(document.getElementById("autocomplete").value, map, 1);
+    var markerDest = geocodeAddress(document.getElementById("autocompleteDest").value, map, 0);
+
+        if (markerOrigin !== undefined) {
+            directionsService.route({
+            origin: {lat: markerOrigin.position.lat, lng: markerOrigin.position.lng},  // Haight.
+            destination: {lat: markerOriginDest.position.lat, lng: markerOriginDest.position.lng},  // Ocean Beach.
+            // Note that Javascript allows us to access the constant
+            // using square brackets and a string value as its
+            // "property."
+            travelMode: google.maps.TravelMode[selectedMode]
+            }, function(response, status) {
+            if (status == 'OK') {
+                directionsRenderer.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+            });
+            
+        }
+  
   }
 
   
+  function geocodeAddress(geocoder, resultsMap, oriDest) {
+    
+    if (oriDest == 1) {var address = document.getElementById('autocomplete').value;}
+    else { document.getElementById("autocompleteDest") }
+
+
+    geocoder.geocode({'address': address}, function(results, status) {
+      if (status === 'OK') {
+        resultsMap.setCenter(results[0].geometry.location);
+        
+        
+        var marker = new google.maps.Marker({
+          map: resultsMap,
+          position: results[0].geometry.location  
+        });
+
+        return marker;
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+        return undefined;
+      }
+      
+
+    });
+  }
+
 
 //   function geolocate() {
 
@@ -50,6 +87,27 @@ function initMap() {
 //         autocomplete.setBounds(circle.getBounds());
       
 //   }
+
+
+function initInitMap() {
+
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: -35.308402, lng: 149.124433},
+        zoom: 8
+      });
+
+}
+
+
+
+function initializeGMAPI() {
+    
+
+    initAutocomplete();
+    initDestAutoComplete(); 
+    initInitMap();
+
+ }
 
 
 
@@ -87,8 +145,29 @@ function initMap() {
               // When the user selects an address from the drop-down, populate the
               // address fields in the form.
               //autocomplete.addListener('place_changed', fillInAddress);
+
+              //initDestAutoComplete();
+
             }
             
+            function initDestAutoComplete() {
+
+                // Create the autocomplete object, restricting the search predictions to
+                // geographical location types.
+                autocompleteDest = new google.maps.places.Autocomplete(
+                    document.getElementById('autocompleteDest'), {});
+              
+                // Avoid paying for data that you don't need by restricting the set of
+                // place fields that are returned to just the address components.
+                autocompleteDest.setFields(['address_component']);
+              
+                // When the user selects an address from the drop-down, populate the
+                // address fields in the form.
+                //autocomplete.addListener('place_changed', fillInAddress);
+  
+              }
+
+
             function fillInAddress() {
               // Get the place details from the autocomplete object.
               var place = autocomplete.getPlace();
@@ -118,7 +197,15 @@ function initMap() {
                 lng: 149.124438
                 };
                 var circle = new google.maps.Circle(
-                    {center: geolocation, radius: 0.2});
+                {center: geolocation, radius: 2});
                 autocomplete.setBounds(circle.getBounds());
 
             }
+
+
+
+// function searchTransport() {
+
+
+
+// }

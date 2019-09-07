@@ -28,6 +28,13 @@
             type="text"/>
         </div>
 
+        <div id="locationFieldDest">
+                <input id="autocompleteDest"
+                placeholder="Enter your work address"
+                onFocus="geolocate()"
+                type="text"/>
+            </div>
+
         <b>Mode of Travel: </b>
         <select id="mode">
         <option value="DRIVING">Driving</option>
@@ -36,6 +43,8 @@
         <option value="TRANSIT">Transit</option>
         </select>
 
+        <br />
+        <input id="clickMe" type="button" value="clickme" onclick="searchTransport();" />
 
     </div>
 
@@ -114,7 +123,7 @@
     <div id="map" class="col-md-6"></div>
 
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk4HsoJg2hlZrUFqQdS3s05wWaxV2q5lQ&libraries=places&callback=initAutocomplete">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk4HsoJg2hlZrUFqQdS3s05wWaxV2q5lQ&libraries=places&callback=initializeGMAPI">
     </script>
   </body>
 </html>

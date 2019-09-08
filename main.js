@@ -31,7 +31,7 @@ function jaavaa() {
 
 
 function searchTransport() {
-    var directionsRenderer = new google.maps.DirectionsRenderer;
+    var directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: "#ff7f24" } });
     var directionsRenderer2 = new google.maps.DirectionsRenderer;
     var directionsService = new google.maps.DirectionsService;
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -91,6 +91,8 @@ async function calculateAndDisplayRoute(directionsService, directionsRenderer, d
             // Determine the distance of the trip
             var distance = response.routes[0].legs[0].distance.value;
             console.log(distance + "m (distance)");
+
+            alert("You saved " + distance/1000 + "km car travel by taking public transport.")
 
             directionsRenderer2.setDirections(response);
         } else {

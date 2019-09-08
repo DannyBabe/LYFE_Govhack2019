@@ -1,3 +1,29 @@
+// const csv = require('csv-parser');
+// const fs = require('file-system');
+const parkRideLocals = [
+    ["Weston","North Weston - Kirkpatrick Street","-35.320885, 149.058926","No Permit Required"],
+    ["Belconnen","Corner of Josephson Street and Walder Street","-35.23824, 149.060841","Permit Only"],
+    ["Charnwood","Charnwood Shopping Centre - Lhotsky Street","-35.205147, 149.034283","No Permit Required"],
+    ["Jamison","Jamison Centre - Bowman Street","-35.252094, 149.072157","No Permit Required"],
+    ["Mawson","Corner of Mawson and Athllon Drive, access from Mawson Place","-35.364975, 149.092885","Permit and Non-permit"],
+    ["Bruce","College Street, adjacent to the University of Canberra","-35.242036, 149.084796","Permit Only"],
+    ["Wanniassa","Athllon Drive, access via Rylah Crescent","-35.390413, 149.084687","No Permit Required"],
+    ["Kippax","Kippax Centre - Hardwick Crescent","-35.22389, 149.020305","No Permit Required"],
+    ["Fyshwick","Tom Price Street","-35.340108, 149.184033","No Permit Required"],
+    ["Curtin","Curtin Shops - Carruthers Street","-35.325559, 149.081705","No Permit Required"],
+    ["Kippax","Moyes Crescent","-35.2207792, 149.0216365","No Permit Required"],
+    ["Woden","Woden Bus Station, access from Matilda Street","-35.343136, 149.087253","Permit Only"],
+    ["Kambah","Kambah Centre - O'Halloran Circuit","-35.393088, 149.067983","No Permit Required"],
+    ["Gungahlin","Gungahlin Town Centre - Gozzard Street, access via Efkarpidis Street","-35.186843, 149.132396","Permit Only"],
+    ["Weston","Coolemon Court, Liardet Street","-35.340347, 149.051397","Permit Only"],
+    ["Chisholm","Chisholm Shops - Bentham Street","-35.414624, 149.128667","No Permit Required"],
+    ["Tuggeranong","Tuggeranong Bus Station, access from Anketell Street","-35.41387, 149.06669","Permit Only"],
+    ["Belconnen","Belconnen Community Bus Station, access from Swanson Circuit","-35.239602, 149.069423","Permit Only"],
+    ["Calwell","Calwell Shops - Webber Street","-35.433428, 149.113051","No Permit Required"],
+    ["Kambah","Kambah Village Shops - Marconi Crescent","-35.379524, 149.057408","No Permit Required"]
+  ];
+
+
 function jaavaa() {
 
     alert("greetings friend");
@@ -21,18 +47,23 @@ function searchTransport() {
 
 async function calculateAndDisplayRoute(directionsService, directionsRenderer) {
 
-    var selectedMode = document.getElementById('mode').value;
+    var selectedMode = "TRANSIT" //document.getElementById('mode').value; // 
 
     var markerOrigin = await findLatLang(document.getElementById("autocomplete").value); // e.g  [-35.3129723, 149.13099599999998]
+
+    console.log(markerOrigin);
     var markerDest = await findLatLang(document.getElementById("autocompleteDest").value);
 
-    
 
+// CHECKPOINT
+    var parkLocal = findclosestparkride(markerOrigin); // -35.123123, 149.1231231
+
+    console.log("gimme the moooney: " + parkLocal);
     document.getElementById("autocomplete").value
 
     directionsService.route({
-        origin: { lat: markerOrigin[0], lng: markerOrigin[1] },  // Haight.
-        destination: { lat: markerDest[0], lng: markerDest[1] },  // Ocean Beach.
+        origin: { lat: parkLocal.lat, lng: parkLocal.lng },//origin: { lat: markerOrigin[0], lng: markerOrigin[1] },  // From ADDR
+        destination: { lat: markerDest[0], lng: markerDest[1] },  // Dest
         travelMode: google.maps.TravelMode[selectedMode]
     }, function (response, status) {
         if (status == 'OK') {
@@ -65,6 +96,65 @@ function findLatLang(address) {
 }
 
 
+
+function findclosestparkride(addrOrigin) {
+
+    // console.log(addrOrigin)
+    // // Loop through CSV data:
+    // var parkAndRideCsv = [];
+    console.log("ADDRORIGIN");
+    console.log(addrOrigin);
+
+    // fs.createReadStream('Park_And_Ride_Locations.csv')
+    // .pipe(csv())
+    // .on('data', (row) => {
+    //     console.log(row);
+    //     parkAndRideCsv.push(row);
+    // })
+    // .on('end', () => {
+    //     console.log('CSV file successfully processed');
+    // });
+
+    var currentClosest = 0;
+    var tmpDistance = 1000000;
+
+    var currCoords;
+
+    for(let i = 0; i < parkRideLocals.length; i++){
+
+        // console.log(parkRideLocals[i][2]);
+
+        currCoords = parkRideLocals[i][2].split(',');
+        // console.log(currCoords);
+        // console.log(currCoords[0]);
+        // console.log(currCoords[1]);
+
+        // console.log("break");
+
+        let distance = Math.sqrt(Math.pow((currCoords[0] - addrOrigin[0]), 2) + Math.pow((currCoords[1] - addrOrigin[1]), 2)); // Use current CSV lat long and addrOri
+        if (distance < tmpDistance) {
+            tmpDistance = distance;
+            currentClosest = i;
+        }
+
+        console.log(parkRideLocals[currentClosest][0] + "Distance: " + tmpDistance)
+    }
+
+    console.log("Final result: " + parkRideLocals[currentClosest][0] + "with distance: " + tmpDistance);
+    //let distance = Math.sqrt(Math.pow((end_lat - lat), 2) + Math.pow((end_lon - lon), 2)); // Use current CSV lat long and addrOri
+    // keep lowest value
+    // return kept lowest
+
+    var resultCoords = parkRideLocals[currentClosest][2].split(',');
+
+    var googCurrClosest = {
+        lat: parseFloat(resultCoords[0]), 
+        lng: parseFloat(resultCoords[1])
+    }
+
+    return googCurrClosest;
+    //return parkRideLocals[currentClosest][2];
+}
 
 //   function geolocate() {
 

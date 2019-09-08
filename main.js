@@ -26,6 +26,8 @@ async function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     var markerOrigin = await findLatLang(document.getElementById("autocomplete").value); // e.g  [-35.3129723, 149.13099599999998]
     var markerDest = await findLatLang(document.getElementById("autocompleteDest").value);
 
+    
+
     document.getElementById("autocomplete").value
 
     directionsService.route({
@@ -95,8 +97,6 @@ function initializeGMAPI() {
     initDestAutoComplete();
     initInitMap();
 
-
-
 }
 
 
@@ -125,9 +125,24 @@ function initAutocomplete() {
 
     // Create the autocomplete object, restricting the search predictions to
     // geographical location types.
-    autocomplete = new google.maps.places.Autocomplete(
-        document.getElementById('autocomplete'), { types: ['geocode'] });
 
+    var defaultBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(-35.087185, 148.874097),
+        new google.maps.LatLng(-35.492961, 149.261650));
+      
+      var input = document.getElementById('autocomplete');
+      var options = {
+        bounds: defaultBounds,
+        types: ['geocode']
+      };
+      
+      autocomplete = new google.maps.places.Autocomplete(input, options);
+
+
+    //autocomplete = new google.maps.places.Autocomplete(
+      //  document.getElementById('autocomplete'), { types: ['geocode'] });
+    
+    
     // Avoid paying for data that you don't need by restricting the set of
     // place fields that are returned to just the address components.
     autocomplete.setFields(['address_component']);
@@ -138,6 +153,7 @@ function initAutocomplete() {
 
     //initDestAutoComplete();
 
+
 }
 
 function initDestAutoComplete() {
@@ -147,6 +163,16 @@ function initDestAutoComplete() {
     autocompleteDest = new google.maps.places.Autocomplete(
         document.getElementById('autocompleteDest'), {});
 
+    var geolocation = {
+        lat: -35.308030,
+        lng: 149.124438
+    };
+    var circle = new google.maps.Circle(
+        { center: geolocation, radius: 100000 });
+
+        console.log(circle);
+        console.log(circle.getBounds());
+    autocompleteDest.setBounds(circle.getBounds());
     // Avoid paying for data that you don't need by restricting the set of
     // place fields that are returned to just the address components.
     autocompleteDest.setFields(['address_component']);
@@ -182,13 +208,14 @@ function fillInAddress() {
 // as supplied by the browser's 'navigator.geolocation' object.
 function geolocate() {
 
-    var geolocation = {
-        lat: -35.308030,
-        lng: 149.124438
-    };
-    var circle = new google.maps.Circle(
-        { center: geolocation, radius: 2 });
-    autocomplete.setBounds(circle.getBounds());
+
+    // var geolocation = {
+    //     lat: -35.308030,
+    //     lng: 149.124438
+    // };
+    // var circle = new google.maps.Circle(
+    //     { center: geolocation, radius: 150 });
+    // autocomplete.setBounds(circle.getBounds());
 
 }
 

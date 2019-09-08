@@ -32,22 +32,24 @@ function jaavaa() {
 
 function searchTransport() {
     var directionsRenderer = new google.maps.DirectionsRenderer;
+    var directionsRenderer2 = new google.maps.DirectionsRenderer;
     var directionsService = new google.maps.DirectionsService;
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 7,
         center: { lat: -35.12, lng: 149.12 }
     });
     directionsRenderer.setMap(map);
+    directionsRenderer2.setMap(map);
 
-    calculateAndDisplayRoute(directionsService, directionsRenderer);
+    calculateAndDisplayRoute(directionsService, directionsRenderer, directionsRenderer2);
     document.getElementById('mode').addEventListener('change', function () {
-        calculateAndDisplayRoute(directionsService, directionsRenderer);
+        calculateAndDisplayRoute(directionsService, directionsRenderer, directionsRenderer2);
     });
 }
 
-async function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+async function calculateAndDisplayRoute(directionsService, directionsRenderer, directionsRenderer2) {
 
-    var selectedMode = "TRANSIT" //document.getElementById('mode').value; //
+    var selectedMode = document.getElementById('mode').value; //
 
     var markerOrigin = await findLatLang(document.getElementById("autocomplete").value); // e.g  [-35.3129723, 149.13099599999998]
 
@@ -55,15 +57,15 @@ async function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     var markerDest = await findLatLang(document.getElementById("autocompleteDest").value);
 
 
-// CHECKPOINT
+    // CHECKPOINT
     var parkLocal = findclosestparkride(markerOrigin); // -35.123123, 149.1231231
 
     console.log("gimme the moooney: " + parkLocal);
     document.getElementById("autocomplete").value
 
     directionsService.route({
-        origin: { lat: parkLocal.lat, lng: parkLocal.lng },//origin: { lat: markerOrigin[0], lng: markerOrigin[1] },  // From ADDR
-        destination: { lat: markerDest[0], lng: markerDest[1] },  // Dest
+        origin: { lat: markerOrigin[0], lng: markerOrigin[1] },  //origin: { lat: parkLocal.lat, lng: parkLocal.lng },// From ADDR
+        destination: { lat: parkLocal.lat, lng: parkLocal.lng },  // Dest
         travelMode: google.maps.TravelMode[selectedMode]
     }, function (response, status) {
         if (status == 'OK') {
@@ -77,6 +79,25 @@ async function calculateAndDisplayRoute(directionsService, directionsRenderer) {
             window.alert('Directions request failed due to ' + status);
         }
     });
+
+    console.log("I SHOULD MAKE IT TO THE SECOND DIRECTIONS NOW?")
+    directionsService.route({
+        origin: { lat: parkLocal.lat, lng: parkLocal.lng }, //origin: { lat: markerOrigin[0], lng: markerOrigin[1] },  // From ADDR
+        destination: { lat: markerDest[0], lng: markerDest[1] },  // Dest
+        travelMode: "TRANSIT"
+    }, function (response, status) {
+        if (status == 'OK') {
+
+            // Determine the distance of the trip
+            var distance = response.routes[0].legs[0].distance.value;
+            console.log(distance + "m (distance)");
+
+            directionsRenderer2.setDirections(response);
+        } else {
+            window.alert('Directions request failed due to ' + status);
+        }
+    });
+
 }
 
 function findLatLang(address) {

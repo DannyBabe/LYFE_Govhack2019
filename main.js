@@ -47,7 +47,7 @@ function searchTransport() {
 
 async function calculateAndDisplayRoute(directionsService, directionsRenderer) {
 
-    var selectedMode = "TRANSIT" //document.getElementById('mode').value; // 
+    var selectedMode = "TRANSIT" //document.getElementById('mode').value; //
 
     var markerOrigin = await findLatLang(document.getElementById("autocomplete").value); // e.g  [-35.3129723, 149.13099599999998]
 

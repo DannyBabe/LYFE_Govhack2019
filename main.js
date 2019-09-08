@@ -34,6 +34,11 @@ async function calculateAndDisplayRoute(directionsService, directionsRenderer) {
         travelMode: google.maps.TravelMode[selectedMode]
     }, function (response, status) {
         if (status == 'OK') {
+
+            // Determine the distance of the trip
+            var distance = response.routes[0].legs[0].distance.value;
+            console.log(distance + "m (distance)");
+
             directionsRenderer.setDirections(response);
         } else {
             window.alert('Directions request failed due to ' + status);
@@ -187,10 +192,3 @@ function geolocate() {
 
 }
 
-
-
-                // function searchTransport() {
-
-
-
-                // }
